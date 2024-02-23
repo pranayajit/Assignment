@@ -1,0 +1,21 @@
+import sqlite3
+import pandas as pd
+
+
+conn = sqlite3.connect('your_database.db')
+
+
+sql_query = """
+SELECT C.customer_id, I.item_name, SUM(O.quantity) as total_quantity
+FROM Sales S
+JOIN Customer C ON S.customer_id = C.customer_id
+JOIN Orders O ON S.sales_id = O.sales_id
+JOIN Items I ON O.item_id = I.item_id
+WHERE C.age BETWEEN 18 AND 35 AND O.quantity IS NOT NULL
+GROUP BY C.customer_id, I.item_name
+HAVING total_quantity > 0
+"""
+
+df = pd.read_sql_query(sql_query, conn)
+
+df.to_csv('output.csv', sep=';', index=False)
